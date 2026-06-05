@@ -1,0 +1,84 @@
+﻿@model CreateUpdateActorVM
+<div class="modal-content border">
+    <form asp-area="Admin" asp-controller="Actor" asp-action="Create"
+          method="post" enctype="multipart/form-data">
+        <div class="modal-header px-x1 bg-light border-bottom-0">
+            <h5 class="modal-title">Create Actor</h5>
+            @* <button class="btn-close me-n1" type="button" data-bs-dismiss="modal" aria-label="Close"></button> *@
+        </div>
+        <div class="modal-body p-x1">
+            <div class="mb-3">
+                <label class="fs-0" for="Name">Name</label>
+                <input class="form-control" id="Name" type="text" name="Name" required="required" />
+            </div>
+
+            <div class="mb-3">
+                <select class="form-select" name="Gender">
+                    <option value="Male">Male</option>
+                    <option value="Female">Female</option>
+                </select>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="fs-0 d-block mb-2">Rate</label>
+
+                <div id="actorRate"></div>
+
+                <input asp-for="Rate" type="hidden" id="Rate" />
+            </div>
+
+            <div class="mb-3">
+
+                <div class="mb-3">
+                    <label class="fs-0">Image</label>
+                    <input type="file" class="form-control" name="ImageFile" accept="image/*" required
+                           onchange="previewImage(event)" />
+                    <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                    <!-- Preview -->
+                    <div class="mt-2" id="imagePreview" style="display:none;">
+                        <img id="previewImg" src="" alt="Preview"
+                             style="max-width: 200px; max-height: 200px; border-radius: 8px;" />
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer d-flex justify-content-end align-items-center bg-light border-0">
+                <button class="btn btn-primary px-4" type="submit">Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+
+<script>
+        document.addEventListener("DOMContentLoaded", function () {
+
+                raterJs({
+        element: document.getElementById("actorRate"),
+        starSize: 32,
+        step: 0.5,
+        rateCallback: function (rating, done) {
+
+            document.getElementById("Rate").value = rating;
+
+            this.setRating(rating);
+            done();
+        }
+    });
+
+        });
+</script>

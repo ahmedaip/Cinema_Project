@@ -1,0 +1,191 @@
+﻿@model CreateUpdateMovieVM
+<div class="card mb-3">
+    <div class="card-body">
+
+        <div class="row">
+
+            <!-- LEFT SIDE: IMAGES -->
+            <div class="col-lg-6 mb-4 mb-lg-0">
+
+                <div class="movie-gallery">
+
+                    <!-- MAIN IMAGE -->
+                    <div class="main-image mb-3">
+                        <img id="mainMovieImg"
+                             src="~/images/movie_images/@Model.Movie.MainImg"
+                             class="img-fluid w-100 rounded"
+                             style="height:450px; object-fit:cover;" />
+                    </div>
+
+                    <!-- THUMBNAILS -->
+                    <div class="d-flex gap-2 flex-wrap movie-thumbs">
+                        <img src="~/images/movie_images/@Model.Movie.MainImg"
+                             class="thumb-img active-thumb"
+                             onclick="changeMain(this.src)" />
+
+                        @foreach (var img in Model.MovieSubImags)
+                        {
+                            <img src="~/images/movie_images/movie_sub_images/@img.Img"
+                                 class="thumb-img"
+                                 onclick="changeMain(this.src)" />
+                        }
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- RIGHT SIDE: DETAILS -->
+            <div class="col-lg-6">
+
+                <h5>@Model.Movie.Name</h5>
+                <a class="fs--1 mb-2 d-block" href="#!">@Model.Movie.Category.Name</a>
+
+                <div class="fs--2 mb-3 d-inline-block text-decoration-none">
+
+                    @{
+                        int fullStars = (int)Math.Floor(Model.Movie.Rate);
+                        bool halfStar = Model.Movie.Rate % 1 >= 0.5m;
+                    }
+
+                    @for (int i = 0; i < fullStars; i++)
+                    {
+                        <span class="fas fa-star text-warning"></span>
+                    }
+
+                    @if (halfStar)
+                    {
+                        <span class="fas fa-star-half-alt text-warning"></span>
+                    }
+
+                    @for (int i = fullStars + (halfStar ? 1 : 0); i < 5; i++)
+                    {
+                        <span class="far fa-star text-muted"></span>
+                    }
+
+                    <span class="ms-2">@Model.Movie.Rate.ToString("0.0")/5</span>
+
+                </div>
+
+                <p class="fs--1">@Model.Movie.Description</p>
+
+                <h4 class="d-flex align-items-center">
+                    <span class="text-warning me-2">@Model.Movie.Price</span>
+                </h4>
+
+                @if (Model.Movie.Status)
+                {
+                    <p class="fs--1">
+                        <strong class="text-success">Available</strong>
+                    </p>
+                }
+                else
+                {
+                    <p class="fs--1">
+                        <strong class="text-danger">Not Available</strong>
+                    </p>
+                }
+
+
+
+
+                <div class="mt-3 d-flex gap-2">
+
+                    <a href="/Admin/Movie/Edit/@Model.Movie.Id"
+                       class="btn btn-falcon-default btn-sm">
+                        <span class="fas fa-external-link-alt"></span>
+                        <span class="ms-1">Edit</span>
+                    </a>
+
+                    <a href="/Admin/Movie/Delete/@Model.Movie.Id"
+                       class="btn btn-falcon-danger btn-sm">
+                        <span class="fas fa-trash"></span>
+                        <span class="ms-1">Delete</span>
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <div class="row mt-4">
+
+                <div class="col-12">
+
+                    <h5 class="mb-3">Cast</h5>
+
+                    <div class="table-responsive">
+
+                        <table class="table align-middle table-hover">
+
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width:80px;">Image</th>
+                                    <th>Name</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var actor in Model.Actors)
+                                {
+                                    <tr>
+
+                                        <!-- Actor Image -->
+                                        <td>
+                                            <img src="~/images/actor_images/@actor.Img"
+                                                 style="width:60px;height:60px;object-fit:cover;border-radius:8px;" />
+                                        </td>
+
+                                        <!-- Actor Name -->
+                                        <td>
+                                            <strong>@actor.Name</strong>
+                                        </td>
+
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+<style>
+    .movie-thumbs img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        transition: 0.2s;
+    }
+
+        .movie-thumbs img:hover {
+            transform: scale(1.05);
+        }
+
+    .active-thumb {
+        border: 2px solid #ffc107;
+    }
+</style>
+
+
+<script>
+    function changeMain(src) {
+        document.getElementById("mainMovieImg").src = src;
+
+        // remove active class
+        document.querySelectorAll(".thumb-img")
+            .forEach(img => img.classList.remove("active-thumb"));
+
+        // add active to clicked
+        event.target.classList.add("active-thumb");
+    }
+</script>

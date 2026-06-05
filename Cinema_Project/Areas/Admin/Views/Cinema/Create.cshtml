@@ -1,0 +1,64 @@
+﻿@model CreateUpdateCinemaVM
+<div class="modal-content border">
+    <form asp-area="Admin" asp-controller="Cinema" asp-action="Create"
+          method="post" enctype="multipart/form-data">
+        <div class="modal-header px-x1 bg-light border-bottom-0">
+            <h5 class="modal-title">Create Cinema</h5>
+            @* <button class="btn-close me-n1" type="button" data-bs-dismiss="modal" aria-label="Close"></button> *@
+        </div>
+        <div class="modal-body p-x1">
+            <div class="mb-3">
+                <label class="fs-0" for="Name">Name</label>
+                <input class="form-control" id="Name" type="text" name="Name" required="required" />
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0" for="Description">Description</label>
+                <textarea class="form-control" rows="3" name="Description" id="Description"></textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0">Image</label>
+                <input type="file" class="form-control" name="ImageFile" accept="image/*" required
+                       onchange="previewImage(event)" />
+                <span asp-validation-for="ImageFile" class="text-danger"></span>
+
+                <!-- Preview -->
+                <div class="mt-2" id="imagePreview" style="display:none;">
+                    <img id="previewImg" src="" alt="Preview"
+                         style="max-width: 200px; max-height: 200px; border-radius: 8px;" />
+                </div>
+            </div>
+
+
+            <div class="mb-3">
+                <label class="fs-0" for="Address">Address</label>
+                <input class="form-control" id="Address" type="text" name="Address" required="required" />
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0" for="Status">Status</label>
+                <select class="form-select" id="Status" name="Status">
+                    <option value="true" selected="selected">Active</option>
+                    <option value="false">InActive</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-end align-items-center bg-light border-0">
+            <button class="btn btn-primary px-4" type="submit">Save</button>
+        </div>
+    </form>
+</div>
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>

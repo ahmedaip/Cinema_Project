@@ -1,0 +1,212 @@
+﻿@model CreateUpdateMovieVM
+<div class="modal-content border">
+    <form asp-area="Admin" asp-controller="Movie" asp-action="Edit"
+          method="post" enctype="multipart/form-data">
+        <div class="modal-header px-x1 bg-light border-bottom-0">
+            <h5 class="modal-title">Edit Movie</h5>
+        </div>
+
+        <input type="hidden" name="Id" value="@Model.Movie.Id" />
+        <div class="modal-body p-x1">
+            <div class="mb-3">
+                <label class="fs-0" for="Name">Name</label>
+                <input class="form-control" id="Name" type="text" name="Name" required="required" value="@Model.Movie.Name" />
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0" for="Description">Description</label>
+                <textarea class="form-control" rows="3" name="Description" id="Description">@Model.Movie.Description</textarea>
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0">Current Image</label>
+
+                <div class="mb-2">
+                    <img src="~/images/movie_images/@Model.Movie.MainImg"
+                         class="img-thumbnail"
+                         style="max-width:200px;max-height:200px;" />
+                </div>
+
+                <label class="fs-0">Change Image</label>
+                <input type="file" class="form-control" name="ImageFile" accept="image/*"
+                       onchange="previewImage(event)" />
+
+                <div class="mt-2" id="imagePreview" style="display:none;">
+                    <img id="previewImg"
+                         style="max-width:200px;max-height:200px;border-radius:8px;" />
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label>Current Sub Images</label>
+
+                <div class="d-flex gap-2 flex-wrap">
+                    @foreach (var img in Model.MovieSubImags)
+                    {
+                        <img src="~/images/movie_images/movie_sub_images/@img.Img"
+                             class="img-thumbnail"
+                             style="width:120px;height:120px;object-fit:cover;" />
+                    }
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">Add New Sub Images</label>
+
+                <input type="file"
+                       class="form-control"
+                       accept="image/*"
+                       name="SubImageFiles"
+                       multiple />
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0" for="Price">Price</label>
+                <input class="form-control" id="Price" type="number" name="Price" required="required" value="@Model.Movie.Price" />
+            </div>
+
+
+            <div class="mb-3">
+                <label class="fs-0" for="Status">Status</label>
+                <select class="form-select" id="Status" name="Status">
+                    @if (Model.Movie.Status)
+                    {
+                        <option value="true" selected>Active</option>
+                        <option value="false">InActive</option>
+                    }
+                    else
+                    {
+                        <option value="true">Active</option>
+                        <option value="false" selected>InActive</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0 d-block mb-2">Rate</label>
+
+                <div id="movieRate"></div>
+                <input type="hidden" id="Rate" name="Rate" value="@Model.Movie.Rate" />
+            </div>
+
+
+            <div class="mb-3">
+                <label class="form-label" for="datetimepicker"> Date</label>
+                <input name="DateTime" class="form-control datetimepicker" id="datetimepicker" type="datetime" placeholder="d/m/y H:i" data-options='{"enableTime":true,"dateFormat":"d/m/y H:i","disableMobile":true}' value="@Model.Movie.DateTime" />
+
+            </div>
+
+
+
+            <div class="mb-3">
+                <label for="CategoryId" class="form-label">Category</label>
+                <select class="form-select" name="CategoryId">
+                    @foreach (var item in Model.Categories)
+                    {
+                        if (item.Id == Model.Movie.CategoryId)
+                        {
+                            <option value="@item.Id" selected>@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+
+            
+            <div class="mb-3">
+                <label for="CinemaId" class="form-label">Cinema</label>
+                <select class="form-select" name="CinemaId">
+                    @foreach (var item in Model.Cinemas)
+                    {
+                        if (item.Id == Model.Movie.CinemaId)
+                        {
+                            <option value="@item.Id" selected>@item.Name</option>
+                        }
+                        else
+                        {
+                            <option value="@item.Id">@item.Name</option>
+                        }
+                    }
+                </select>
+            </div>
+
+
+
+            
+            
+            <div class="mb-3">
+                <label for="CinemaId" class="form-label">Cast</label>
+                <select class="form-select js-choice" id="ActorId" multiple size="1" name="ActorIds" data-options='{"removeItemButton":true,"placeholder":true}'>
+                    @foreach (var actor in Model.Actors)
+                    {
+                        if (Model.Movie.Actors.Any(a => a.Id == actor.Id))
+                        {
+                            <option value="@actor.Id" selected>
+                                @actor.Name
+                            </option>
+                        }
+                        else
+                        {
+                            <option value="@actor.Id">
+                                @actor.Name
+                            </option>
+                        }
+                    }
+                </select>
+            </div>
+
+
+
+
+
+
+            <div class="modal-footer d-flex justify-content-end align-items-center bg-light border-0">
+                <button class="btn btn-primary px-4" type="submit">Save</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('imagePreview').style.display = 'block';
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var initialRate = @Model.Movie.Rate;
+
+        var rater = raterJs({
+            element: document.getElementById("movieRate"),
+            starSize: 32,
+            step: 0.5,
+            rating: initialRate,
+
+            rateCallback: function (rating, done) {
+
+                document.getElementById("Rate").value = rating;
+
+                this.setRating(rating);
+                done();
+            }
+        });
+
+        rater.setRating(initialRate);
+    });
+</script>
+
+<script src="https://unpkg.com/rater-js/index.js"></script>

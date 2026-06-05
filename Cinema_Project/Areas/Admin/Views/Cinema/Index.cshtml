@@ -1,0 +1,134 @@
+﻿@model CinemaVM
+<div class="col-xxl-12 col-xl-12">
+    <div class="card" id="ticketsTable" data-list='{"valueNames":["client","subject","status","priority","agent"],"page":11,"pagination":true,"fallback":"tickets-table-fallback"}'>
+        <div class="card-header border-bottom border-200 px-0">
+            <div class="d-lg-flex justify-content-between">
+                <div class="row flex-between-center gy-2 px-x1">
+                    <div class="col-auto pe-0">
+                        <h3 class="mb-0">Cinemas</h3>
+                    </div>
+                    <div class="col-auto">
+                        <form>
+                            <div class="input-group input-search-width">
+                                <input class="form-control form-control-sm shadow-none search" type="search" placeholder="Search  by name" aria-label="search" name="cinemaName" value="@ViewBag.cinemaName" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary border-300 hover-border-secondary"><span class="fa fa-search fs--1"></span></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="border-bottom border-200 my-3"></div>
+                <div class="d-flex align-items-center justify-content-between justify-content-lg-end px-x1">
+                    <button class="btn btn-sm btn-falcon-default d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#ticketOffcanvas" aria-controls="ticketOffcanvas"><span class="fas fa-filter" data-fa-transform="shrink-4 down-1"></span><span class="ms-1 d-none d-sm-inline-block">Filter</span></button>
+                    <div class="bg-300 mx-3 d-none d-lg-block d-xl-none" style="width:1px; height:29px"></div>
+                    <div class="d-none" id="table-ticket-actions">
+                        <div class="d-flex">
+                            <select class="form-select form-select-sm" aria-label="Bulk actions">
+                                <option selected="">Bulk actions</option>
+                                <option value="Refund">Refund</option>
+                                <option value="Delete">Delete</option>
+                                <option value="Archive">Archive</option>
+                            </select>
+                            <button class="btn btn-falcon-default btn-sm ms-2" type="button">Apply</button>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center" id="table-ticket-replace-element">
+                        @* <div class="dropdown">
+                            <button class="btn btn-sm btn-falcon-default dropdown-toggle dropdown-caret-none" type="button" id="ticket-layout" data-bs-toggle="dropdown" data-boundary="window" aria-haspopup="true" aria-expanded="false" data-bs-reference="parent"><span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block me-1">Table View</span><span class="fas fa-chevron-down" data-fa-transform="shrink-3 down-1"></span></button>
+                            <div class="dropdown-menu dropdown-toggle-item dropdown-menu-end border py-2" aria-labelledby="ticket-layout"><a class="dropdown-item active" href="../../app/support-desk/table-view.html">Table View</a><a class="dropdown-item" href="../../app/support-desk/card-view.html">Card View</a></div>
+                        </div> *@
+                        <a href="/Admin/Cinema/Create" class="btn btn-falcon-success btn-md mx-5 px-4 py-2 fs-0">
+                            <span class="fas fa-plus" data-fa-transform="shrink-3"></span>
+                            <span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block ms-1">New</span>
+                        </a>                    <div class="dropdown font-sans-serif ms-2">
+                        @* <button class="btn btn-falcon-default text-600 btn-sm dropdown-toggle dropdown-caret-none" type="button" id="preview-dropdown" data-bs-toggle="dropdown" data-boundary="viewport" aria-haspopup="true" aria-expanded="false"><span class="fas fa-ellipsis-h fs--2"></span></button> *@
+                        @* <div class="dropdown-menu dropdown-menu-end border py-2" aria-labelledby="preview-dropdown">
+                            <a class="dropdown-item" href="#!">View</a><a class="dropdown-item" href="#!">Export</a>
+                            <div class="dropdown-divider"></div><a class="dropdown-item text-danger" href="#!">Remove</a>
+                        </div> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive scrollbar">
+            <table class="table table-sm mb-0 fs--1 table-view-tickets">
+                <thead class="text-800 bg-light">
+                    <tr>
+                        <th class="sort align-middle ps-2" data-sort="client">CinemaName</th>
+                        <th class="sort align-middle" data-sort="subject" style="min-width:15.625rem">Description</th>
+                        <th class="sort align-middle" data-sort="subject" style="min-width:15.625rem">Address</th>
+                        <th class="sort align-middle" data-sort="status">Status</th>
+                    </tr>
+                </thead>
+                <tbody class="list" id="table-ticket-body">
+                    @foreach (var item in Model.Cinemas)
+                    {
+                        <tr>
+
+                            <td class="align-middle client white-space-nowrap pe-3 pe-xxl-4 ps-2">
+                                <div class="d-flex align-items-center gap-2 position-relative">
+                                    @* <div class="avatar avatar-xl">
+                                            <div class="avatar-name rounded-circle"><span>EW</span></div>
+                                        </div> *@
+                                    <h6 class="mb-0">@item.Name</h6>
+                                </div>
+                            </td>
+                            <td class="align-middle subject py-2 pe-4">@item.Description</td>
+                            <td class="align-middle subject py-2 pe-4">@item.Address</td>
+                            @if (item.Status)
+                            {
+                                <td class="align-middle status fs-0 pe-4">
+                                    <small class="badge rounded badge-soft-success false">Active</small>
+                                </td>
+                            }
+                            else
+                            {
+                                <td class="align-middle status fs-0 pe-4">
+                                    <small class="badge rounded badge-soft-danger false">InActive</small>
+                                </td>
+                            }
+                            <td>
+                                <a href="/Admin/Cinema/Edit/@item.Id" class="btn btn-falcon-default btn-sm" type="button"><span class="fas fa-external-link-alt" data-fa-transform="shrink-3"></span><span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block ms-1">Export</span></a>
+                                <a href="/Admin/Cinema/Delete/@item.Id" class="btn btn-falcon-danger btn-sm" type="button">
+                                    <span class="fas fa-trash" data-fa-transform="shrink-3"></span>
+                                    <span class="d-none d-sm-inline-block d-xl-none d-xxl-inline-block ms-1">Delete</span>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <div class="text-center d-none" id="tickets-table-fallback">
+                <p class="fw-bold fs-1 mt-3">No ticket found</p>
+            </div>
+        </div>
+    </div>
+    <div class="card-footer">
+        <div class="d-flex justify-content-center align-items-center gap-1">
+
+            @* Previous *@
+            <a asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)"
+               class="btn btn-sm btn-falcon-default @(Model.CurrentPage == 1 ? "disabled" : "")">
+                <span class="fas fa-chevron-left"></span>
+            </a>
+
+            @* Page Numbers *@
+            @for (int i = 1; i <= Model.TotalPages; i++)
+            {
+                <a asp-action="Index" asp-route-page="@i"
+                   class="btn btn-sm @(i == Model.CurrentPage ? "btn-primary" : "btn-falcon-default")">
+                    @i
+                </a>
+            }
+
+            @* Next *@
+            <a asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)"
+               class="btn btn-sm btn-falcon-default @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                <span class="fas fa-chevron-right"></span>
+            </a>
+
+        </div>
+    </div>
+</div>
+</div>

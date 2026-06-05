@@ -1,0 +1,143 @@
+﻿@using System.Globalization
+@model MovieVM
+<div class="col-xxl-12 col-xl-12">
+    <div class="card" id="ticketsTable" data-list='{"valueNames":["client","subject","status","priority","agent"],"page":11,"pagination":true,"fallback":"tickets-table-fallback"}'>
+        <div class="card-header border-bottom border-200 px-0">
+            <div class="d-lg-flex justify-content-between">
+                <div class="row flex-between-center gy-2 px-x1">
+                    <div class="col-auto pe-0">
+                        <h3 class="mb-0">Movies</h3>
+                    </div>
+                    <div class="col-auto">
+                        <form>
+                            <div class="input-group input-search-width">
+                                <input class="form-control form-control-sm shadow-none search" type="search" placeholder="Search  by name" aria-label="search" name="movieName" value="@ViewBag.movieName" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary border-300 hover-border-secondary"><span class="fa fa-search fs--1"></span></button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+                <div class="border-bottom border-200 my-3"></div>
+                <div class="d-flex align-items-center justify-content-between justify-content-lg-end px-x1">
+                    <button class="btn btn-sm btn-falcon-default d-xl-none" type="button" data-bs-toggle="offcanvas" data-bs-target="#ticketOffcanvas" aria-controls="ticketOffcanvas"><span class="fas fa-filter" data-fa-transform="shrink-4 down-1"></span><span class="ms-1 d-none d-sm-inline-block">Filter</span></button>
+                    <div class="bg-300 mx-3 d-none d-lg-block d-xl-none" style="width:1px; height:29px"></div>
+                    <div class="d-none" id="table-ticket-actions">
+                        <div class="d-flex">
+                            <select class="form-select form-select-sm" aria-label="Bulk actions">
+                                <option selected="">Bulk actions</option>
+                                <option value="Refund">Refund</option>
+                                <option value="Delete">Delete</option>
+                                <option value="Archive">Archive</option>
+                            </select>
+                            <button class="btn btn-falcon-default btn-sm ms-2" type="button">Apply</button>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-center" id="table-ticket-replace-element">
+
+                                            <div class="dropdown font-sans-serif ms-2">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        @foreach (var item in Model.Movies)
+        {
+
+            <div class="col-12 p-x1">
+                <div class="row">
+                    <div class="col-sm-5 col-md-4">
+                        <div class="position-relative h-sm-100">
+                                <a class="d-block h-100" href="/Customer/Home/MovieDetails/@item.Id"><img class="img-fluid fit-cover w-sm-100 h-sm-100 rounded-1 absolute-sm-centered" src="~/images/movie_images/@item.MainImg" alt="" /></a>
+                            <div class="badge rounded-pill bg-success position-absolute top-0 end-0 me-2 mt-2 fs--2 z-index-2">New</div>
+                        </div>
+                    </div>
+                    <div class="col-sm-7 col-md-8">
+                        <div class="row">
+                            <div class="col-lg-8">
+                                    <h5 class="mt-3 mt-sm-0"><a class="text-dark fs-0 fs-lg-1" href="/Customer/Home/MovieDetails/@item.Id">@item.Name</a></h5>
+                                <p class="fs--1 mb-2 mb-md-3"><a class="text-500" href="#!">@item.Category.Name</a></p>
+                                <ul class="list-unstyled d-none d-lg-block">
+                                    <li><span class="fas fa-circle" data-fa-transform="shrink-12"></span><span>@item.DateTime</span></li>
+                                    <li><span class="fas fa-circle" data-fa-transform="shrink-12"></span><span>@item.Cinema.Name</span></li>
+                                    <li><span class="fas fa-circle" data-fa-transform="shrink-12"></span><span>@item.Cinema.Address</span></li>
+                                </ul>
+                            </div>
+                            <div class="col-lg-4 d-flex justify-content-between flex-column">
+                                <div>
+                                    <h4 class="fs-1 fs-md-2 text-warning mb-0">@item.Price</h4>
+
+                                    @{
+                                        int fullStars = (int)Math.Floor(item.Rate);
+                                        bool halfStar = item.Rate % 1 >= 0.5m;
+                                        int emptyStars = 5 - fullStars - (halfStar ? 1 : 0);
+                                    }
+
+                                    <div class="mb-2 mt-3">
+                                        @for (int i = 0; i < fullStars; i++)
+                                        {
+                                            <span class="fa fa-star text-warning"></span>
+                                        }
+
+                                        @if (halfStar)
+                                        {
+                                            <span class="fas fa-star-half-alt text-warning"></span>
+                                        }
+
+                                        @for (int i = 0; i < emptyStars; i++)
+                                        {
+                                            <span class="fa fa-star text-300"></span>
+                                        }
+
+                                        <span class="ms-1">(@item.Rate)</span>
+                                    </div>
+
+                                    <div class="d-none d-lg-block">
+                                        @if (item.Status)
+                                        {
+                                            <p class="fs--1 mb-1">
+                                                <strong class="text-success">Available</strong>
+                                            </p>
+                                        }
+                                        else
+                                        {
+                                            <p class="fs--1 mb-1">
+                                                <strong class="text-danger">Not Available</strong>
+                                            </p>
+                                        }
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+        <div class="card-footer">
+            <div class="d-flex justify-content-center align-items-center gap-1">
+
+                @* Previous *@
+                <a asp-action="Index" asp-route-page="@(Model.CurrentPage - 1)"
+                   class="btn btn-sm btn-falcon-default @(Model.CurrentPage == 1 ? "disabled" : "")">
+                    <span class="fas fa-chevron-left"></span>
+                </a>
+
+                @* Page Numbers *@
+                @for (int i = 1; i <= Model.TotalPages; i++)
+                {
+                    <a asp-action="Index" asp-route-page="@i"
+                       class="btn btn-sm @(i == Model.CurrentPage ? "btn-primary" : "btn-falcon-default")">
+                        @i
+                    </a>
+                }
+
+                @* Next *@
+                <a asp-action="Index" asp-route-page="@(Model.CurrentPage + 1)"
+                   class="btn btn-sm btn-falcon-default @(Model.CurrentPage == Model.TotalPages ? "disabled" : "")">
+                    <span class="fas fa-chevron-right"></span>
+                </a>
+
+            </div>
+        </div>
+    </div>
+</div>

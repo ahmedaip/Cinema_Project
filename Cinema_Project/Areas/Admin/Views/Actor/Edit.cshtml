@@ -1,0 +1,93 @@
+﻿@model Actor
+<div class="modal-content border">
+    <form asp-area="Admin" asp-controller="Actor" asp-action="Edit" method="post" enctype="multipart/form-data">
+
+
+        <input type="hidden" name="Id" value="@Model.Id" />
+        <div class="modal-header px-x1 bg-light border-bottom-0">
+            <h5 class="modal-title">Edit Actor</h5>
+        </div>
+        <div class="modal-body p-x1">
+            <div class="mb-3">
+                <label class="fs-0" for="Name">Name</label>
+                <input class="form-control" id="Name" type="text" name="Name" required value="@Model.Name" />
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0 d-block mb-2">Rate</label>
+
+                <div id="actorRate"></div>
+
+                <input type="hidden" name="Rate" id="Rate" value="@Model.Rate" />
+            </div>
+
+
+            <div class="mb-3">
+                <label class="fs-0">Image</label>
+                <div class="mt-1 mb-2">
+                    <img id="previewImg" src="~/images/actor_images/@Model.Img" alt="Actor Image"
+                         style="max-width: 200px; max-height: 200px; border-radius: 8px;" />
+                </div>
+                <input type="file" class="form-control" name="ImageFile" accept="image/*"
+                       onchange="previewImage(event)" />
+            </div>
+
+            <div class="mb-3">
+                <label class="fs-0" for="Gender">Gender</label>
+                <select class="form-select" id="Gender" name="Gender">
+                    @if (Model.Gender == "Male") // test
+                    {
+                        <option value="Male" selected>Male</option>
+                        <option value="Female">Female</option>
+                    }
+                    else
+                    {
+                        <option value="Male">Male</option>
+                        <option value="Female" selected>Female</option>
+                    }
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer d-flex justify-content-end align-items-center bg-light border-0">
+            <button class="btn btn-primary px-4" type="submit">Save</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    function previewImage(event) {
+        var file = event.target.files[0];
+        if (file) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById('previewImg').src = e.target.result;
+            }
+            reader.readAsDataURL(file);
+        }
+    }
+</script>
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const currentRate = parseFloat("@Model.Rate".replace(',', '.'));
+
+        const rater = raterJs({
+            element: document.getElementById("actorRate"),
+            starSize: 32,
+            step: 0.5,
+
+            rateCallback: function (rating, done) {
+
+                document.getElementById("Rate").value = rating;
+
+                this.setRating(rating);
+                done();
+            }
+        });
+
+        rater.setRating(currentRate);
+    });
+</script>
