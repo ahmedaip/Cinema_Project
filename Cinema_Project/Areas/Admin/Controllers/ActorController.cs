@@ -7,19 +7,28 @@ namespace Cinema_Project.Areas.Admin.Controllers
     [Area(CD.ADMIN_AREA)]
     public class ActorController : Controller
     {
-        private readonly ApplicationDbContext _context;
-        private readonly ActorService _actorService;
+        //private readonly ApplicationDbContext _context;
+        private readonly IRepository<Actor> _actorRepository;
+        private readonly ActorService _actorService = new ActorService();
 
-        public ActorController()
+        //public ActorController()
+        //{
+        //    _context = new ApplicationDbContext();
+        //    _actorRepository = new Repository<Actor>();
+        //    _actorService = new ActorService();
+        //}
+
+        public ActorController(IRepository<Actor> actorRepository)
         {
-            _context = new ApplicationDbContext();
-            _actorService = new ActorService();
+            _actorRepository = actorRepository;
         }
-        public IActionResult Index(string actorName, int page = 1)
+
+        public async Task<IActionResult> Index(string actorName, int page = 1)
         {
 
 
-            var actors = _context.Actors.AsQueryable();
+            //var actors = _context.Actors.AsQueryable();
+            var actors = await _actorRepository.GetAllAsync();
             if (actorName != null)
             {
                 actors = actors.Where(c => c.Name.Contains(actorName));
@@ -34,8 +43,6 @@ namespace Cinema_Project.Areas.Admin.Controllers
                 CurrentPage = page
             });
         }
-
-
         [HttpGet]
         public IActionResult Create()
         {
@@ -43,7 +50,7 @@ namespace Cinema_Project.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(CreateUpdateActorVM createUpdateActorVM)
+        public async Task<IActionResult> Create(CreateUpdateActorVM createUpdateActorVM)
         {
             if (createUpdateActorVM.ImageFile == null || createUpdateActorVM.ImageFile.Length == 0)
             {
@@ -62,18 +69,18 @@ namespace Cinema_Project.Areas.Admin.Controllers
                 var fileName = _actorService.SaveFile(createUpdateActorVM.ImageFile);
                 actor.Img = fileName;
             }
-            _context.Actors.Add(actor);
-            _context.SaveChanges();
+            //_context.Actors.Add(actor);
+            await _actorRepository.CreateAsync(actor);
+            //_context.SaveChanges();
+            await _actorRepository.CommitAsync();
             return RedirectToAction(nameof(Index));
         }
 
-
-
-
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            var actor = _context.Actors.SingleOrDefault(c => c.Id == id);
+            //var actor = _context.Actors.SingleOrDefault(c => c.Id == id);
+            var actor = await _actorRepository.GetOneAsync(a => a.Id == id);
             if (actor is null)
                 return NotFound();
             return View(actor);
@@ -81,7 +88,7 @@ namespace Cinema_Project.Areas.Admin.Controllers
 
 
         [HttpPost]
-        public IActionResult Edit(Actor actor, IFormFile? ImageFile)
+        public async Task<IActionResult> Edit(Actor actor, IFormFile? ImageFile)
         {
             ModelState.Remove("Img");
             ModelState.Remove("ImageFile");
@@ -89,7 +96,8 @@ namespace Cinema_Project.Areas.Admin.Controllers
             if (!ModelState.IsValid)
                 return View(actor);
 
-            var actorInDb = _context.Actors.AsNoTracking().FirstOrDefault(b => b.Id == actor.Id);
+            //var actorInDb = _context.Actors.AsNoTracking().FirstOrDefault(b => b.Id == actor.Id);
+            var actorInDb = await _actorRepository.GetOneAsync(isTracking: false , filter: a => a.Id == actor.Id);
 
             if (actorInDb == null)
                 return NotFound();
@@ -105,23 +113,27 @@ namespace Cinema_Project.Areas.Admin.Controllers
                 actor.Img = actorInDb.Img;
             }
 
-            _context.Actors.Update(actor);
-            _context.SaveChanges();
+            //_context.Actors.Update(actor);
+            _actorRepository.Update(actor);
+            //_context.SaveChanges();
+            await _actorRepository.CommitAsync(); 
             return RedirectToAction(nameof(Index));
         }
 
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            var actor = _context.Actors.SingleOrDefault(c => c.Id == id);
+            //var actor = _context.Actors.SingleOrDefault(c => c.Id == id);
+            var actor = await _actorRepository.GetOneAsync(c => c.Id == id);
             if (actor is null)
                 return NotFound();
 
             _actorService.RemoveFile(actor.Img);
 
-
-            _context.Actors.Remove(actor);
-            _context.SaveChanges();
+            //_context.Actors.Remove(actor);
+            _actorRepository.Delete(actor);
+            //_context.SaveChanges();
+            await _actorRepository.CommitAsync();
             return RedirectToAction(nameof(Index));
 
         }

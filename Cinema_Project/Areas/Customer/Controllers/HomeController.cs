@@ -12,9 +12,9 @@ namespace Cinema_Project.Areas.Customer.Controllers
         private readonly ApplicationDbContext _context;
         private readonly MovieService _movieService;
 
-        public HomeController()
+        public HomeController(ApplicationDbContext context)
         {
-            _context = new ApplicationDbContext();
+            _context = context;
             _movieService = new MovieService();
         }
         public IActionResult Index(string movieName, int page = 1)
